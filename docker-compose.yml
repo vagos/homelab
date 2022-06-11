@@ -2,14 +2,17 @@ version: "3"
 
 # More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
+
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    environment:
+        - PIHOLE_UID=0
     # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
       - "8080:80/tcp"
     environment:
       TZ: 'Europe/Athens'
@@ -17,11 +20,22 @@ services:
     # Volumes store your data between container upgrades
     volumes:
       - /home/server/data/pihole:/etc/pihole
-      - /home/server/data/pihole:/etc/dnsmasq.d
+      - /home/server/data/pihole/dnsmasq:/etc/dnsmasq.d
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    cap_add:
-      - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)      
+    # cap_add:
+      # - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)      
     restart: unless-stopped
+
+
+  cgit:
+    image: invokr/cgit 
+    container_name: cgit
+    ports:
+      - 8070:80
+    volumes:
+      - /srv/git:/git
+      - /home/server/data/cgit/config/cgitrc:/etc/cgitrc
+
 
   nginx:
       image: lscr.io/linuxserver/nginx:latest
@@ -35,4 +49,61 @@ services:
       ports:
         - 80:80
         - 443:443
+      restart: unless-stopped
+
+  calibre:
+      image: lscr.io/linuxserver/calibre:latest
+      container_name: calibre
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Atehns
+      volumes:
+        - /home/server/data/calibre:/config
+      ports:
+        - 8180:8080
+        - 8181:8081
+      restart: unless-stopped
+
+  taskd:
+      image: x4121/taskd:latest
+      container_name: taskd
+      volumes:
+          - /home/server/data/taskd:/var/taskd
+      ports:
+          - 53589:53589
+      environment:
+          CERT_CN: "task.home.xyz"
+          CERT_ORGANIZATION: "home"
+          CERT_COUNTRY: "GR"
+          CERT_STATE: "Patras"
+          CERT_LOCALITY: "Greek"
+      restart: unless-stopped
+
+  jellyfin:
+      image: lscr.io/linuxserver/jellyfin:latest
+      container_name: jellyfin
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Athens
+        - JELLYFIN_PublishedServerUrl=192.168.1.9 #optional
+      volumes:
+        - /home/server/data/jellyfin:/config
+        - /srv/exports/media/shows:/data/shows
+        - /srv/exports/media/movies:/data/movies
+      ports:
+        - 8096:8096
+        - 8920:8920 #optional
+        - 7359:7359/udp #optional
+        - 1900:1900/udp #optional
+      restart: unless-stopped
+  
+  ikiwiki:
+      image: pdxhub/ikiwiki
+      container_name: ikiwiki
+      ports:
+        - "8090:80"
+      volumes:
+        - /home/server/data/wiki:/wiki
       restart: unless-stopped
