@@ -1,8 +1,8 @@
 version: "3"
 
-# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
 
+  # More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
@@ -17,13 +17,9 @@ services:
     environment:
       TZ: 'Europe/Athens'
       WEBPASSWORD: 'admin'
-    # Volumes store your data between container upgrades
     volumes:
       - /home/server/data/pihole:/etc/pihole
       - /home/server/data/pihole/dnsmasq:/etc/dnsmasq.d
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    # cap_add:
-      # - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)      
     restart: unless-stopped
 
 
@@ -35,6 +31,7 @@ services:
     volumes:
       - /srv/git:/git
       - /home/server/data/cgit/config/cgitrc:/etc/cgitrc
+    restart: unless-stopped
 
 
   nginx:
@@ -51,19 +48,6 @@ services:
         - 443:443
       restart: unless-stopped
 
-  calibre:
-      image: lscr.io/linuxserver/calibre:latest
-      container_name: calibre
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=Europe/Atehns
-      volumes:
-        - /home/server/data/calibre:/config
-      ports:
-        - 8180:8080
-        - 8181:8081
-      restart: unless-stopped
 
   taskd:
       image: x4121/taskd:latest
@@ -80,6 +64,22 @@ services:
           CERT_LOCALITY: "Greek"
       restart: unless-stopped
 
+  
+  
+  calibre:
+      image: lscr.io/linuxserver/calibre:latest
+      container_name: calibre
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Atehns
+      volumes:
+        - /home/server/data/calibre:/config
+      ports:
+        - 8180:8080
+        - 8181:8081
+      restart: unless-stopped
+  
   jellyfin:
       image: lscr.io/linuxserver/jellyfin:latest
       container_name: jellyfin
@@ -98,12 +98,16 @@ services:
         - 7359:7359/udp #optional
         - 1900:1900/udp #optional
       restart: unless-stopped
-  
-  ikiwiki:
-      image: pdxhub/ikiwiki
-      container_name: ikiwiki
-      ports:
-        - "8090:80"
+
+  dokuwiki:
+      image: lscr.io/linuxserver/dokuwiki:latest
+      container_name: dokuwiki
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Athens
       volumes:
-        - /home/server/data/wiki:/wiki
+        - /home/server/data/wiki:/config
+      ports:
+        - 8280:80
       restart: unless-stopped
