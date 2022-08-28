@@ -1,0 +1,49 @@
+version: "3"
+  
+services:
+
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - USER=admin
+      - PASS=admin
+    volumes:
+      - /home/server/data/transmission:/config
+      - /home/server/downloads:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - /home/server/data/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Athens
+    volumes:
+      - /home/server/data/lidarr:/config
+      - /srv/exports/music:/music #optional
+      - /home/server/downloads:/downloads #optional
+    ports:
+      - 8686:8686
+    restart: unless-stopped 

@@ -17,9 +17,13 @@ services:
     environment:
       TZ: 'Europe/Athens'
       WEBPASSWORD: 'admin'
+    # Volumes store your data between container upgrades
     volumes:
       - /home/server/data/pihole:/etc/pihole
       - /home/server/data/pihole/dnsmasq:/etc/dnsmasq.d
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    # cap_add:
+      # - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)      
     restart: unless-stopped
 
 
@@ -46,6 +50,10 @@ services:
       ports:
         - 80:80
         - 443:443
+      depends_on:
+        - cgit
+        - jellyfin
+        - pihole
       restart: unless-stopped
 
 
@@ -65,36 +73,13 @@ services:
       restart: unless-stopped
 
   
-  
-  calibre:
-      image: lscr.io/linuxserver/calibre:latest
-      container_name: calibre
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=Europe/Atehns
-      volumes:
-        - /home/server/data/calibre:/config
-      ports:
-        - 8180:8080
-        - 8181:8081
-      restart: unless-stopped
-  
-  jellyfin:
-      image: lscr.io/linuxserver/jellyfin:latest
-      container_name: jellyfin
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=Europe/Athens
-        - JELLYFIN_PublishedServerUrl=192.168.1.9 #optional
-      volumes:
-        - /home/server/data/jellyfin:/config
-        - /srv/exports/media/shows:/data/shows
-        - /srv/exports/media/movies:/data/movies
-      ports:
-        - 8096:8096
-        - 8920:8920 #optional
-        - 7359:7359/udp #optional
-        - 1900:1900/udp #optional
-      restart: unless-stopped
+        #  ikiwiki:
+        #      image: pdxhub/ikiwiki
+        #      container_name: ikiwiki
+        #      ports:
+        #        - "8090:80"
+        #      volumes:
+        #        - /home/server/data/wiki:/wiki
+        #      environment:
+        #        - VIRTUAL_HOST=wiki.home.xyz
+        #      restart: unless-stopped
