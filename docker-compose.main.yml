@@ -72,6 +72,45 @@ services:
           CERT_LOCALITY: "Greek"
       restart: unless-stopped
 
+  radicale:
+      image: xlrl/radicale:latest
+      container_name: radicale
+      environment: 
+        # - GIT_REPOSITORY=https://user:password@github.com/user/repo
+        # - GIT_USERNAME=username
+        # - GIT_EMAIL=usermail@mail.com
+        - RADICALE_USER=admin
+        - RADICALE_PASS=admin
+      ports: 
+        - "8989:8000"
+      volumes: 
+        - /home/server/data/radicale:/var/radicale
+
+  znc:
+      image: linuxserver/znc
+      container_name: znc
+      environment:
+         - PUID=1000
+         - PGID=1000
+         - TZ=Europe/Athens
+      volumes:
+         - /home/server/data/znc:/config
+      ports:
+         - 6501:6501 
+
+
+        #   znc:
+        #     image: lscr.io/linuxserver/znc:latest
+        #     container_name: znc
+        #     environment:
+        #       - PUID=1000
+        #       - PGID=1000
+        #       - TZ=Europe/Athens
+        #     volumes:
+        #       - /home/server/data/znc:/config
+        #     ports:
+        #       - 6501:6501
+        #     restart: unless-stopped
   
         #  ikiwiki:
         #      image: pdxhub/ikiwiki

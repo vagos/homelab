@@ -1,20 +1,7 @@
 version: "3"
   
 services:
-  calibre:
-      image: lscr.io/linuxserver/calibre:latest
-      container_name: calibre
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=Europe/Atehns
-      volumes:
-        - /home/server/data/calibre:/config
-      ports:
-        - 8180:8080
-        - 8181:8081
-      restart: unless-stopped
-  
+
   jellyfin:
       image: lscr.io/linuxserver/jellyfin:latest
       container_name: jellyfin
@@ -34,3 +21,12 @@ services:
         - 7359:7359/udp #optional
         - 1900:1900/udp #optional
       restart: unless-stopped
+
+  icecast:
+    image: pltnk/icecast2
+    container_name: icecast2
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - /home/server/data/icecast:/etc/icecast2
