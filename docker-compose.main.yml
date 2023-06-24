@@ -27,7 +27,7 @@ services:
       - 8070:80
     volumes:
       - /srv/git:/git
-      - /home/server/data/cgit/config/cgitrc:/etc/cgitrc
+      - /home/server/data/cgit/config:/etc
     restart: unless-stopped
 
 
