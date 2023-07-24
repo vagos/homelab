@@ -23,12 +23,11 @@ services:
         - znc
       restart: unless-stopped
 
-  # More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    # environment:
-    #     - PIHOLE_UID=0
+    environment:
+         - PIHOLE_UID=0
     # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
       - "53:53/tcp"
@@ -42,9 +41,6 @@ services:
     volumes:
       - /home/server/data/pihole:/etc/pihole
       - /home/server/data/pihole/dnsmasq:/etc/dnsmasq.d
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    # cap_add:
-      # - NET_ADMIN # Recommended but not required (DHCP needs NET_ADMIN)      
     restart: unless-stopped
 
 
@@ -55,7 +51,7 @@ services:
       - 8070:80
     volumes:
       - /srv/git:/git
-      - /home/server/data/cgit/config/cgitrc:/etc/cgitrc
+      - /home/server/data/cgit/config:/etc
     restart: unless-stopped
 
 
@@ -88,17 +84,17 @@ services:
       volumes: 
         - /home/server/data/radicale:/var/radicale
 
-  znc:
-      image: linuxserver/znc
-      container_name: znc
-      environment:
-         - PUID=1000
-         - PGID=1000
-         - TZ=Europe/Athens
-      volumes:
-         - /home/server/data/znc:/config
-      ports:
-         - 6501:6501 
+  # znc:
+  #     image: linuxserver/znc
+  #     container_name: znc
+  #     environment:
+  #        - PUID=1000
+  #        - PGID=1000
+  #        - TZ=Europe/Athens
+  #     volumes:
+  #        - /home/server/data/znc:/config
+  #     ports:
+  #        - 6501:6501 
 
   #  ikiwiki:
   #      image: pdxhub/ikiwiki
