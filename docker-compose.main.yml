@@ -53,22 +53,6 @@ services:
       - /home/server/data/cgit/config:/etc
     restart: unless-stopped
 
-
-  taskd:
-      image: x4121/taskd:latest
-      container_name: taskd
-      volumes:
-          - /home/server/data/taskd:/var/taskd
-      ports:
-          - 53589:53589
-      environment:
-          CERT_CN: "task.home.xyz"
-          CERT_ORGANIZATION: "home"
-          CERT_COUNTRY: "GR"
-          CERT_STATE: "Patras"
-          CERT_LOCALITY: "Greek"
-      restart: unless-stopped
-
   radicale:
       image: xlrl/radicale:latest
       container_name: radicale
