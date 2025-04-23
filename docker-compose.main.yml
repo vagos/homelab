@@ -26,8 +26,6 @@ services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    environment:
-         - PIHOLE_UID=0
     # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
       - "53:53/tcp"
@@ -35,6 +33,7 @@ services:
       # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
       - "8080:80/tcp"
     environment:
+      PIHOLE_UID: 0
       TZ: 'Europe/Athens'
       WEBPASSWORD: 'admin'
     # Volumes store your data between container upgrades
@@ -84,25 +83,14 @@ services:
       volumes: 
         - /home/server/data/radicale:/var/radicale
 
-  # znc:
-  #     image: linuxserver/znc
-  #     container_name: znc
-  #     environment:
-  #        - PUID=1000
-  #        - PGID=1000
-  #        - TZ=Europe/Athens
-  #     volumes:
-  #        - /home/server/data/znc:/config
-  #     ports:
-  #        - 6501:6501 
-
-  #  ikiwiki:
-  #      image: pdxhub/ikiwiki
-  #      container_name: ikiwiki
-  #      ports:
-  #        - "8090:80"
-  #      volumes:
-  #        - /home/server/data/wiki:/wiki
-  #      environment:
-  #        - VIRTUAL_HOST=wiki.home.xyz
-  #      restart: unless-stopped
+  znc:
+      image: linuxserver/znc
+      container_name: znc
+      environment:
+         - PUID=1000
+         - PGID=1000
+         - TZ=Europe/Athens
+      volumes:
+         - /home/server/data/znc:/config
+      ports:
+         - 6501:6501 
